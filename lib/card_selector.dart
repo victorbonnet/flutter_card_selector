@@ -37,7 +37,6 @@ class _CardSelectorState extends State<CardSelector> {
   final List<Widget> _cards;
 
   var dropWidth = 0.0;
-  var replacingCard = false;
 
   CardSelectorState csState = CardSelectorState.idle;
 
@@ -52,7 +51,7 @@ class _CardSelectorState extends State<CardSelector> {
 
   @override
   Widget build(BuildContext context) {
-    if (replacingCard) {
+    if (csState == CardSelectorState.switching) {
       initialCardListIndex++;
       var last = _cards.removeLast();
       _cards.insert(0, last);
@@ -65,7 +64,6 @@ class _CardSelectorState extends State<CardSelector> {
 
         setState(() {
           csState = CardSelectorState.idle;
-          replacingCard = false;
         });
       });
     }
@@ -90,7 +88,7 @@ class _CardSelectorState extends State<CardSelector> {
         },
         onAccept: (data) {
           setState(() {
-            replacingCard = true;
+            csState = CardSelectorState.switching;
           });
         },
         onLeave: (data) {
@@ -196,4 +194,4 @@ class _CardSelectorState extends State<CardSelector> {
   }
 }
 
-enum CardSelectorState { idle, target }
+enum CardSelectorState { idle, target, switching }
