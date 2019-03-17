@@ -180,8 +180,8 @@ class _CardSelectorState extends State<CardSelector> {
       key: w.key,
       duration: Duration(
           milliseconds:
-              (widget.cardAnimationDurationMs * position * animDelayFactor)
-                  .round()),
+          (widget.cardAnimationDurationMs * position * animDelayFactor)
+              .round()),
       curve: Curves.easeOut,
       top: (widget.mainCardHeight - cardHeight) / 2,
       left: leftPadding,
@@ -189,17 +189,17 @@ class _CardSelectorState extends State<CardSelector> {
         opacity: opacity,
         curve: Curves.easeOut,
         duration:
-            Duration(milliseconds: widget.cardAnimationDurationMs * position),
+        Duration(milliseconds: widget.cardAnimationDurationMs * position),
         child: position == 0
             ? draggableWidget
             : AnimatedContainer(
-                duration: Duration(
-                    milliseconds: widget.cardAnimationDurationMs * position),
-                curve: Curves.easeOut,
-                width: cardWidth,
-                height: cardHeight,
-                child: w,
-              ),
+          duration: Duration(
+              milliseconds: widget.cardAnimationDurationMs * position),
+          curve: Curves.easeOut,
+          width: cardWidth,
+          height: cardHeight,
+          child: w,
+        ),
       ),
     );
   }
