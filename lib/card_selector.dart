@@ -15,6 +15,7 @@ class CardSelector extends StatefulWidget {
   final double mainCardPadding;
   final double cardsGap;
   final int cardAnimationDurationMs;
+  final double dropTargetWidth;
   final Position position;
 
   CardSelector({
@@ -25,7 +26,8 @@ class CardSelector extends StatefulWidget {
     this.mainCardPadding = 0,
     this.cardsGap = 12,
     this.cardAnimationDurationMs = defaultAnimationDuration,
-    this.position = Position.left,
+    this.dropTargetWidth = 64.0,
+    this.position = Position.left, //todo
   });
 
   @override
@@ -82,7 +84,7 @@ class _CardSelectorState extends State<CardSelector> {
         builder: (context, List<String> candidateData, rejectedData) {
           return Container(
             height: widget.mainCardHeight,
-            width: 100.0,
+            width: widget.dropTargetWidth,
           );
         },
         onWillAccept: (data) {
@@ -162,7 +164,7 @@ class _CardSelectorState extends State<CardSelector> {
       ),
       childWhenDragging: Container(),
       onDragStarted: () {
-        setState(() => dropWidth = 64.0);
+        setState(() => dropWidth = widget.dropTargetWidth);
       },
       onDragEnd: (details) {
         setState(() => dropWidth = 0.0);
