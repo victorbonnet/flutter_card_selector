@@ -2,7 +2,8 @@ library card_selector;
 
 import 'package:flutter/widgets.dart';
 
-const defaultAnimationDuration = Duration(milliseconds: 200);
+const defaultAnimationDuration = 100;
+const animDelayFactor = 1.3;
 
 enum Position { left, right }
 
@@ -13,7 +14,7 @@ class CardSelector extends StatefulWidget {
   final double mainCardHeight;
   final double mainCardPadding;
   final double cardsGap;
-  final Duration cardAnimationDuration;
+  final int cardAnimationDurationMs;
   final Position position;
 
   CardSelector({
@@ -22,8 +23,8 @@ class CardSelector extends StatefulWidget {
     this.mainCardWidth = 240,
     this.mainCardHeight = 150,
     this.mainCardPadding = 0,
-    this.cardsGap = 16,
-    this.cardAnimationDuration = defaultAnimationDuration,
+    this.cardsGap = 12,
+    this.cardAnimationDurationMs = defaultAnimationDuration,
     this.position = Position.left,
   });
 
@@ -52,11 +53,12 @@ class _CardSelectorState extends State<CardSelector> {
   @override
   Widget build(BuildContext context) {
     if (replacingCard) {
-      initialCardListIndex ++;
+      initialCardListIndex++;
       var last = _cards.removeLast();
       _cards.insert(0, last);
 
-      Future.delayed(widget.cardAnimationDuration, () {
+      Future.delayed(Duration(milliseconds: widget.cardAnimationDurationMs),
+          () {
         if (widget.onChanged != null) {
           widget.onChanged(initialCardListIndex % widget.cards.length);
         }
@@ -130,18 +132,20 @@ class _CardSelectorState extends State<CardSelector> {
     }
 
     var leftPadding = widget.mainCardPadding;
-    if (position > 0) {
-      var idx = cardListLength - position;
-      var alignRight = widget.mainCardPadding + widget.mainCardWidth -
-          cardWidth;
-      leftPadding = alignRight + position * scaleBetween(
-          idx, widget.cardsGap / 2, widget.cardsGap, 0, cardListLength);
+    if (position > positionFirstCard) {
+      var idx = cardListLength - position + positionFirstCard;
+      var leftPosAlignRight =
+          widget.mainCardPadding + widget.mainCardWidth - cardWidth;
+      leftPadding = leftPosAlignRight +
+          (position - positionFirstCard) *
+              scaleBetween(
+                  idx, widget.cardsGap / 2, widget.cardsGap, 0, cardListLength - positionFirstCard);
     }
 
     var opacity = 1.0;
     if (position > 0) {
-      opacity = scaleBetween(
-          cardListLength - position, 0.0, 1.0, 0, cardListLength);
+      opacity =
+          scaleBetween(cardListLength - position, 0.0, 1.0, 0, cardListLength);
     }
 
     var draggableWidget = Draggable(
@@ -167,29 +171,29 @@ class _CardSelectorState extends State<CardSelector> {
     );
 
     return AnimatedPositioned(
-      duration: widget.cardAnimationDuration,
+      duration:
+          Duration(milliseconds: (widget.cardAnimationDurationMs * position * animDelayFactor).round()),
       curve: Curves.easeOut,
       top: (widget.mainCardHeight - cardHeight) / 2,
       left: leftPadding,
       child: AnimatedOpacity(
         opacity: opacity,
         curve: Curves.easeOut,
-        duration: widget.cardAnimationDuration,
+        duration:
+            Duration(milliseconds: widget.cardAnimationDurationMs * position),
         child: position == 0
             ? draggableWidget
             : AnimatedContainer(
-          duration: widget.cardAnimationDuration,
-          curve: Curves.easeOut,
-          width: cardWidth,
-          height: cardHeight,
-          child: w,
-        ),
+                duration: Duration(
+                    milliseconds: widget.cardAnimationDurationMs * position),
+                curve: Curves.easeOut,
+                width: cardWidth,
+                height: cardHeight,
+                child: w,
+              ),
       ),
     );
   }
 }
 
-enum CardSelectorState {
-  idle,
-  target
-}
+enum CardSelectorState { idle, target }
