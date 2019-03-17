@@ -9,176 +9,178 @@ enum Position { left, right }
 class CardSelector extends StatefulWidget {
   final List<Widget> cards;
   final ValueChanged<int> onChanged;
-  final double cardWidth;
-  final double cardHeight;
+  final double mainCardWidth;
+  final double mainCardHeight;
+  final double mainCardPadding;
+  final double cardsGap;
   final Duration cardAnimationDuration;
   final Position position;
 
   CardSelector({
     @required this.cards,
     this.onChanged,
-    this.cardWidth = 240,
-    this.cardHeight = 150,
+    this.mainCardWidth = 240,
+    this.mainCardHeight = 150,
+    this.mainCardPadding = 0,
+    this.cardsGap = 16,
     this.cardAnimationDuration = defaultAnimationDuration,
     this.position = Position.left,
   });
 
   @override
-  _CardSelectorState createState() => _CardSelectorState();
+  _CardSelectorState createState() =>
+      _CardSelectorState(cards.reversed.toList());
 }
 
 class _CardSelectorState extends State<CardSelector> {
+  final List<Widget> _cards;
+
   var dropWidth = 0.0;
-  var secondCardDimRatio = 0.9;
-  var thirdCardDimRatio = 0.8;
   var inDragTarget = false;
   var replacingCard = false;
 
-  var index = 0;
-  var firstCard;
-  var secondCard;
-  var thirdCard;
+  var initialCardListIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
+  _CardSelectorState(this._cards);
 
-    firstCard = widget.cards[index];
-    secondCard = widget.cards[index + 1];
-    thirdCard = widget.cards[index + 2];
+  scaleBetween(unscaledNum, minAllowed, maxAllowed, min, max) {
+    return (maxAllowed - minAllowed) * (unscaledNum - min) / (max - min) +
+        minAllowed;
   }
 
   @override
   Widget build(BuildContext context) {
-    var secondCardWidth = widget.cardWidth * secondCardDimRatio;
-    var thirdCardWidth = widget.cardWidth * thirdCardDimRatio;
-    var secondCardHeight = widget.cardHeight * secondCardDimRatio;
-    var thirdCardHeight = widget.cardHeight * thirdCardDimRatio;
 
     if (replacingCard) {
-      index++;
+      initialCardListIndex ++;
+      var last = _cards.removeLast();
+      _cards.insert(0, last);
+
+      setState(() {
+
+      });
 
       Future.delayed(widget.cardAnimationDuration, () {
-        firstCard = widget.cards[index % (widget.cards.length)];
-        secondCard = widget.cards[(index + 1) % (widget.cards.length)];
-        thirdCard = widget.cards[(index + 2) % (widget.cards.length)];
+
 
         if (widget.onChanged != null) {
-          widget.onChanged(widget.cards.indexOf(firstCard));
+          widget.onChanged(initialCardListIndex % widget.cards.length);
         }
 
         setState(() {
           inDragTarget = false;
-          secondCardDimRatio = 0.9;
-          thirdCardDimRatio = 0.8;
           replacingCard = false;
         });
       });
     }
 
+    var widgets = _cards.map((e)=>e).toList();
+    widgets.add(Container(
+      height: widget.mainCardHeight,
+      width: dropWidth,
+      child: DragTarget(
+        builder: (context, List<String> candidateData, rejectedData) {
+          return Container(
+            height: widget.mainCardHeight,
+            width: 100.0,
+          );
+        },
+        onWillAccept: (data) {
+          setState(() {
+            inDragTarget = true;
+          });
+
+          return true;
+        },
+        onAccept: (data) {
+          setState(() {
+            replacingCard = true;
+          });
+        },
+        onLeave: (data) {
+          setState(() {
+            inDragTarget = false;
+          });
+        },
+      ),
+    ));
+
     return SizedBox(
       width: double.infinity,
-      height: widget.cardHeight,
+      height: widget.mainCardHeight,
       child: Stack(
-        children: <Widget>[
-          AnimatedPositioned(
-            duration: widget.cardAnimationDuration,
-            curve: Curves.easeInOut,
-            top: (widget.cardHeight - thirdCardHeight) / 2,
-            left: replacingCard ? 28.0 : inDragTarget ? 44.0 : 68.0,
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 100),
-              opacity: 0.1,
-              child: AnimatedContainer(
-                duration: widget.cardAnimationDuration,
-                curve: Curves.easeInOut,
-                width: thirdCardWidth,
-                height: thirdCardHeight,
-                child: thirdCard,
-              ),
-            ),
-          ),
-          AnimatedPositioned(
-            duration: widget.cardAnimationDuration,
-            curve: Curves.easeInOut,
-            top: (widget.cardHeight - secondCardHeight) / 2,
-            left: replacingCard ? -16.0 : inDragTarget ? 0.0 : 28.0,
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 100),
-              opacity: 0.5,
-              child: AnimatedContainer(
-                duration: widget.cardAnimationDuration,
-                curve: Curves.easeInOut,
-                width: secondCardWidth,
-                height: secondCardHeight,
-                child: secondCard,
-              ),
-            ),
-          ),
-          replacingCard
-              ? Container()
-              : Positioned(
-            left: -16.0,
-            child: Draggable(
-              data: "card",
-              axis: Axis.horizontal,
-              feedback: Container(
-                width: widget.cardWidth,
-                height: widget.cardHeight,
-                child: firstCard,
-              ),
-              childWhenDragging: Container(),
-              onDragStarted: () {
-                setState(() {
-                  dropWidth = 64.0;
-                });
-              },
-              onDragEnd: (details) {
-                setState(() {
-                  dropWidth = 0.0;
-                });
-              },
-              child: Container(
-                width: widget.cardWidth,
-                height: widget.cardHeight,
-                child: firstCard,
-              ),
-            ),
-          ),
-          Container(
-            height: widget.cardHeight,
-            width: dropWidth,
-            child: DragTarget(
-              builder: (context, List<String> candidateData, rejectedData) {
-                return Container(
-                  height: widget.cardHeight,
-                  width: 100.0,
-                );
-              },
-              onWillAccept: (data) {
-                setState(() {
-                  inDragTarget = true;
-                  secondCardDimRatio = 1;
-                  thirdCardDimRatio = 0.9;
-                });
+        children: widgets.map((w) {
+          var idx = widgets.indexOf(w);
 
-                return true;
-              },
-              onAccept: (data) {
-                setState(() {
-                  replacingCard = true;
-                });
-              },
-              onLeave: (data) {
-                setState(() {
-                  inDragTarget = false;
-                  secondCardDimRatio = 0.9;
-                  thirdCardDimRatio = 0.8;
-                });
-              },
+          if (idx == widgets.length-1) return w; // return the drag target
+
+          var lastCardIdx = widget.cards.length - (inDragTarget || replacingCard ? 2 : 1);
+
+          var cardWidth =  widget.mainCardWidth;
+          var cardHeight =  widget.mainCardHeight;
+          if (idx < lastCardIdx) {
+            var factor = scaleBetween(idx, 0.5, 1.0, 0, lastCardIdx);
+            cardWidth = widget.mainCardWidth * factor;
+            cardHeight = widget.mainCardHeight * factor;
+          }
+
+          var leftPadding = widget.mainCardPadding;
+          if (idx < widgets.length - 2) {
+            leftPadding =
+                widget.mainCardPadding + widget.mainCardWidth - cardWidth +
+                    (widget.cards.length - 1 - idx) * scaleBetween(
+                        idx, widget.cardsGap / 2, widget.cardsGap, 0,
+                        widget.cards.length - 1);
+          }
+
+          var opacity = 1.0;
+          if (idx < lastCardIdx) {
+            opacity = scaleBetween(idx, 0.0, 1.0, 0, lastCardIdx);
+          }
+
+          var draggableWidget = Draggable(
+            data: "card",
+            axis: Axis.horizontal,
+            feedback: Container(
+              width: cardWidth,
+              height: cardHeight,
+              child: w,
             ),
-          ),
-        ],
+            childWhenDragging: Container(),
+            onDragStarted: () {
+              setState(() => dropWidth = 64.0);
+            },
+            onDragEnd: (details) {
+              setState(() => dropWidth = 0.0);
+            },
+            child: Container(
+              width: cardWidth,
+              height: cardHeight,
+              child: w,
+            ),
+          );
+
+          return AnimatedPositioned(
+            duration: widget.cardAnimationDuration,
+            curve: Curves.easeOut,
+            top: (widget.mainCardHeight - cardHeight) / 2,
+            left: leftPadding,
+            child: AnimatedOpacity(
+              opacity: opacity,
+              curve: Curves.easeOut,
+              duration: widget.cardAnimationDuration,
+              child: idx == widgets.length - 2
+                  ? draggableWidget
+                  : AnimatedContainer(
+                      duration: widget.cardAnimationDuration,
+                      curve: Curves.easeOut,
+                      width: cardWidth,
+                      height: cardHeight,
+                      child: w,
+                    ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
