@@ -1,14 +1,54 @@
-# card_selector
+# Card Selector
 
-A new Flutter package project.
+Widget selector for Flutter using stack. An example is available on this [repo](https://github.com/victorbonnet/flutter_fancy_wallet).
 
 ## Getting Started
 
-This project is a starting point for a Dart
-[package](https://flutter.io/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+### Installation
+```
+dependencies:
+  flutter_card_selector: "^0.0.1"
+```
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+### Import the library
+```
+import 'package:flutter_card_selector/flutter_card_selector.dart';
+```
+
+### Add the widget
+```
+const list = ["1", "2", "3", "4", "5"];
+const colors = [Colors.blue, Colors.grey, Colors.red, Colors.cyan, Colors.amber];
+class Home extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> widgets = [];
+    for (int i = 0; i < 5; i++) {
+      widgets.add(Container(
+        color: colors[i],
+        child: Center(
+            child: Text(
+          list[i],
+          style: Theme.of(context).textTheme.title,
+        )),
+      ));
+    }
+    return Padding(
+      padding: EdgeInsets.only(top: 80.0),
+      child: CardSelector(
+        cards: widgets,
+        mainCardWidth: 240,
+        mainCardHeight: 150,
+        mainCardPadding: -32,
+        cardAnimationDurationMs: 200,
+        cardsGap: 24.0,
+        dropTargetWidth: 8.0,
+      ),
+    );
+  }
+}
+```
+
+
+## Example
+![](fancy.gif)
