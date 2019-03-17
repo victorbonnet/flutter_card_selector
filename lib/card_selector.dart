@@ -2,7 +2,7 @@ library card_selector;
 
 import 'package:flutter/widgets.dart';
 
-const defaultAnimationDuration = 100;
+const defaultAnimationDuration = 80;
 const animDelayFactor = 1.3;
 
 enum Position { left, right }
@@ -29,8 +29,12 @@ class CardSelector extends StatefulWidget {
   });
 
   @override
-  _CardSelectorState createState() =>
-      _CardSelectorState(cards.reversed.toList());
+  _CardSelectorState createState() {
+    return _CardSelectorState(cards.reversed.map((w) {
+      return Container(key: UniqueKey(), child: w,);
+    }).toList());
+  }
+
 }
 
 class _CardSelectorState extends State<CardSelector> {
@@ -56,8 +60,8 @@ class _CardSelectorState extends State<CardSelector> {
       var last = _cards.removeLast();
       _cards.insert(0, last);
 
-      Future.delayed(Duration(milliseconds: widget.cardAnimationDurationMs),
-          () {
+      var duration = Duration(milliseconds: widget.cardAnimationDurationMs);
+      Future.delayed(duration, () {
         if (widget.onChanged != null) {
           widget.onChanged(initialCardListIndex % widget.cards.length);
         }
@@ -169,6 +173,7 @@ class _CardSelectorState extends State<CardSelector> {
     );
 
     return AnimatedPositioned(
+      key: w.key,
       duration:
           Duration(milliseconds: (widget.cardAnimationDurationMs * position * animDelayFactor).round()),
       curve: Curves.easeOut,
