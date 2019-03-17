@@ -31,10 +31,12 @@ class CardSelector extends StatefulWidget {
   @override
   _CardSelectorState createState() {
     return _CardSelectorState(cards.reversed.map((w) {
-      return Container(key: UniqueKey(), child: w,);
+      return Container(
+        key: UniqueKey(),
+        child: w,
+      );
     }).toList());
   }
-
 }
 
 class _CardSelectorState extends State<CardSelector> {
@@ -140,14 +142,14 @@ class _CardSelectorState extends State<CardSelector> {
           widget.mainCardPadding + widget.mainCardWidth - cardWidth;
       leftPadding = leftPosAlignRight +
           (position - positionFirstCard) *
-              scaleBetween(
-                  idx, widget.cardsGap / 2, widget.cardsGap, 0, cardListLength - positionFirstCard);
+              scaleBetween(idx, widget.cardsGap / 2, widget.cardsGap, 0,
+                  cardListLength - positionFirstCard);
     }
 
     var opacity = 1.0;
-    if (position > 0) {
-      opacity =
-          scaleBetween(cardListLength - position, 0.0, 1.0, 0, cardListLength);
+    if (position > positionFirstCard) {
+      opacity = scaleBetween(cardListLength - position - positionFirstCard, 0.0,
+          1.0, 0, cardListLength - positionFirstCard);
     }
 
     var draggableWidget = Draggable(
@@ -174,8 +176,10 @@ class _CardSelectorState extends State<CardSelector> {
 
     return AnimatedPositioned(
       key: w.key,
-      duration:
-          Duration(milliseconds: (widget.cardAnimationDurationMs * position * animDelayFactor).round()),
+      duration: Duration(
+          milliseconds:
+              (widget.cardAnimationDurationMs * position * animDelayFactor)
+                  .round()),
       curve: Curves.easeOut,
       top: (widget.mainCardHeight - cardHeight) / 2,
       left: leftPadding,
