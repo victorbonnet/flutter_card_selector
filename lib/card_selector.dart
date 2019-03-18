@@ -150,7 +150,7 @@ class _CardSelectorState extends State<CardSelector> {
 
     var opacity = 1.0;
     if (position > positionFirstCard) {
-      opacity = scaleBetween(cardListLength - position - positionFirstCard, 0.0,
+      opacity = scaleBetween(cardListLength - position, 0.0,
           1.0, 0, cardListLength - positionFirstCard);
     }
 
