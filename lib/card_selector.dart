@@ -17,6 +17,7 @@ class CardSelector extends StatefulWidget {
   final double cardsGap;
   final int cardAnimationDurationMs;
   final double dropTargetWidth;
+  final double lastCardSizeFactor;
 
   CardSelector({
     @required this.cards,
@@ -24,9 +25,10 @@ class CardSelector extends StatefulWidget {
     this.mainCardWidth = 240,
     this.mainCardHeight = 150,
     this.mainCardPadding = 0,
-    this.cardsGap = 12,
+    this.cardsGap = 10,
     this.cardAnimationDurationMs = defaultAnimationDuration,
     this.dropTargetWidth = 64.0,
+    this.lastCardSizeFactor = 0.6,
   });
 
   @override
@@ -59,8 +61,7 @@ class _CardSelectorState extends State<CardSelector> {
 
   @override
   Widget build(BuildContext context) {
-    if (csState == CardSelectorState.switching)
-      nextCard();
+    if (csState == CardSelectorState.switching) nextCard();
     else if (csState == CardSelectorState.switchingBack) previousCard();
 
     var widgets = _cards.map((w) {
@@ -188,7 +189,7 @@ class _CardSelectorState extends State<CardSelector> {
     var cardHeight = widget.mainCardHeight;
     if (position > positionFirstCard) {
       var idx = cardListLength - position + positionFirstCard;
-      var factor = scaleBetween(idx, 0.5, 1.0, 0, cardListLength);
+      var factor = scaleBetween(idx, widget.lastCardSizeFactor, 1.0, 0, cardListLength);
       cardWidth = widget.mainCardWidth * factor;
       cardHeight = widget.mainCardHeight * factor;
     }
