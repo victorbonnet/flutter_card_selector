@@ -47,6 +47,7 @@ class _CardSelectorState extends State<CardSelector> {
 
   var dropWidth = 0.0;
   var showLastCard = false;
+  var disableCardPreviewAnim = false;
 
   CardSelectorState csState = CardSelectorState.idle;
 
@@ -91,8 +92,9 @@ class _CardSelectorState extends State<CardSelector> {
       leftPaddingLastCard = leftPaddingLastCard + dropWidth * 2;
     } else if (csState == CardSelectorState.switchingBack) {
       leftPaddingLastCard = widget.mainCardPadding;
-    } else {
+    } else if (disableCardPreviewAnim) {
       lastCardAnimDuration = Duration(milliseconds: 0);
+      disableCardPreviewAnim = false;
     }
     return AnimatedPositioned(
       left: leftPaddingLastCard,
@@ -161,6 +163,7 @@ class _CardSelectorState extends State<CardSelector> {
             },
             onAccept: (data) {
               setState(() {
+                disableCardPreviewAnim = true;
                 showLastCard = false;
                 csState = CardSelectorState.switchingBack;
               });
