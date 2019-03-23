@@ -47,6 +47,9 @@ class _CardSelectorState extends State<CardSelector> {
   var dropWidth = 50.0;
   var showLastCard = false;
   var disableCardPreviewAnim = false;
+  var disableFirstCardAnimation = false;
+  var disableLastCardAnimation = false;
+  var disableDraggable = false;
 
   CardSelectorState csState = CardSelectorState.idle;
 
@@ -201,15 +204,28 @@ class _CardSelectorState extends State<CardSelector> {
           cardListLength - positionFirstCard);
     }
 
-    var duration = (widget.cardAnimationDurationMs * position / 2).round();
+    var factorAnim = scaleBetween(position, 1, 2, 0, _cards.length - 1);
+    var duration = (widget.cardAnimationDurationMs * factorAnim).round();
+    var draggable = position == 0 && !disableDraggable;
 
     if (position == 0 && csState == CardSelectorState.target) {
       //place the card off the screen to improve the animation
       leftPadding = -widget.mainCardWidth;
     }
+
+    if (position == 0 && disableFirstCardAnimation) {
+      duration = 0;
+      disableFirstCardAnimation = false;
+    }
+
+    if (position == _cards.length - 1 && disableLastCardAnimation) {
+      duration = 0;
+      disableLastCardAnimation = false;
+    }
+
     return AnimatedPositioned(
       key: w.key,
-      duration: Duration(milliseconds: duration),
+      duration: Duration(milliseconds: (duration * 1.5).round()),
       curve: Curves.easeOut,
       top: (widget.mainCardHeight - cardHeight) / 2,
       left: leftPadding,
@@ -217,7 +233,7 @@ class _CardSelectorState extends State<CardSelector> {
         opacity: opacity,
         curve: Curves.easeOut,
         duration: Duration(milliseconds: duration),
-        child: position == 0 ? Draggable(
+        child: draggable ? Draggable(
           data: "card",
           axis: Axis.horizontal,
           feedback: Container(
@@ -256,9 +272,13 @@ class _CardSelectorState extends State<CardSelector> {
     initialCardListIndex++;
     var last = _cards.removeLast();
     _cards.insert(0, last);
+    disableLastCardAnimation = true;
+    disableDraggable = true;
 
     var duration = Duration(milliseconds: widget.cardAnimationDurationMs);
     Future.delayed(duration, () {
+      disableDraggable = false;
+
       if (widget.onChanged != null) {
         widget.onChanged(initialCardListIndex % widget.cards.length);
       }
@@ -268,8 +288,11 @@ class _CardSelectorState extends State<CardSelector> {
   }
 
   void previousCard() {
+    disableDraggable = true;
     var duration = Duration(milliseconds: widget.cardAnimationDurationMs);
     Future.delayed(duration, () {
+      disableDraggable = false;
+      disableFirstCardAnimation = true;
       initialCardListIndex--;
       var first = _cards.removeAt(0);
       _cards.add(first);
