@@ -55,11 +55,6 @@ class _CardSelectorState extends State<CardSelector> {
 
   _CardSelectorState(this._cards);
 
-  scaleBetween(unscaledNum, minAllowed, maxAllowed, min, max) {
-    return (maxAllowed - minAllowed) * (unscaledNum - min) / (max - min) +
-        minAllowed;
-  }
-
   @override
   Widget build(BuildContext context) {
     if (csState == CardSelectorState.switching) nextCard();
@@ -82,6 +77,10 @@ class _CardSelectorState extends State<CardSelector> {
         children: widgets,
       ),
     );
+  }
+
+  void updateState(CardSelectorState newState) {
+    setState(() => csState = newState);
   }
 
   Widget lastCardPreview() {
@@ -119,21 +118,14 @@ class _CardSelectorState extends State<CardSelector> {
           );
         },
         onWillAccept: (data) {
-          setState(() {
-            csState = CardSelectorState.target;
-          });
-
+          updateState(CardSelectorState.target);
           return true;
         },
         onAccept: (data) {
-          setState(() {
-            csState = CardSelectorState.switching;
-          });
+          updateState(CardSelectorState.switching);
         },
         onLeave: (data) {
-          setState(() {
-            csState = CardSelectorState.idle;
-          });
+          updateState(CardSelectorState.idle);
         },
       ),
     );
@@ -154,25 +146,18 @@ class _CardSelectorState extends State<CardSelector> {
               );
             },
             onWillAccept: (data) {
-              setState(() {
-                showLastCard = true;
-                csState = CardSelectorState.targetBack;
-              });
-
+              showLastCard = true;
+              updateState(CardSelectorState.targetBack);
               return true;
             },
             onAccept: (data) {
-              setState(() {
-                disableCardPreviewAnim = true;
-                showLastCard = false;
-                csState = CardSelectorState.switchingBack;
-              });
+              disableCardPreviewAnim = true;
+              showLastCard = false;
+              updateState(CardSelectorState.switchingBack);
             },
             onLeave: (data) {
-              setState(() {
-                showLastCard = false;
-                csState = CardSelectorState.idle;
-              });
+              showLastCard = false;
+              updateState(CardSelectorState.idle);
             },
           ),
         )
@@ -284,9 +269,7 @@ class _CardSelectorState extends State<CardSelector> {
         widget.onChanged(initialCardListIndex % widget.cards.length);
       }
 
-      setState(() {
-        csState = CardSelectorState.idle;
-      });
+      updateState(CardSelectorState.idle);
     });
   }
 
@@ -301,9 +284,12 @@ class _CardSelectorState extends State<CardSelector> {
         widget.onChanged(initialCardListIndex % widget.cards.length);
       }
 
-      setState(() {
-        csState = CardSelectorState.idle;
-      });
+      updateState(CardSelectorState.idle);
     });
+  }
+
+  scaleBetween(unscaledNum, minAllowed, maxAllowed, min, max) {
+    return (maxAllowed - minAllowed) * (unscaledNum - min) / (max - min) +
+        minAllowed;
   }
 }
