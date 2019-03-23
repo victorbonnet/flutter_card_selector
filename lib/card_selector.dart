@@ -3,7 +3,6 @@ library card_selector;
 import 'package:flutter/widgets.dart';
 
 const defaultAnimationDuration = 150;
-const animDelayFactor = 1.05;
 
 enum Position { left, right }
 enum CardSelectorState { idle, target, switching, targetBack, switchingBack }
@@ -45,7 +44,7 @@ class CardSelector extends StatefulWidget {
 class _CardSelectorState extends State<CardSelector> {
   final List<Widget> _cards;
 
-  var dropWidth = 0.0;
+  var dropWidth = 50.0;
   var showLastCard = false;
   var disableCardPreviewAnim = false;
 
@@ -57,8 +56,10 @@ class _CardSelectorState extends State<CardSelector> {
 
   @override
   Widget build(BuildContext context) {
-    if (csState == CardSelectorState.switching) nextCard();
-    else if (csState == CardSelectorState.switchingBack) previousCard();
+    if (csState == CardSelectorState.switching)
+      nextCard();
+    else if (csState == CardSelectorState.switchingBack)
+      previousCard();
 
     var widgets = _cards.map((w) {
       var idx = _cards.indexOf(w);
@@ -85,7 +86,7 @@ class _CardSelectorState extends State<CardSelector> {
 
   Widget lastCardPreview() {
     var lastCardAnimDuration =
-        Duration(milliseconds: widget.cardAnimationDurationMs);
+    Duration(milliseconds: widget.cardAnimationDurationMs);
     var leftPaddingLastCard = -widget.mainCardWidth;
     if (csState == CardSelectorState.targetBack) {
       leftPaddingLastCard = leftPaddingLastCard + dropWidth * 2;
@@ -177,7 +178,8 @@ class _CardSelectorState extends State<CardSelector> {
     var cardHeight = widget.mainCardHeight;
     if (position > positionFirstCard) {
       var idx = cardListLength - position + positionFirstCard;
-      var factor = scaleBetween(idx, widget.lastCardSizeFactor, 1.0, 0, cardListLength);
+      var factor = scaleBetween(
+          idx, widget.lastCardSizeFactor, 1.0, 0, cardListLength);
       cardWidth = widget.mainCardWidth * factor;
       cardHeight = widget.mainCardHeight * factor;
     }
@@ -195,65 +197,57 @@ class _CardSelectorState extends State<CardSelector> {
 
     var opacity = 1.0;
     if (position > positionFirstCard) {
-      opacity = scaleBetween(cardListLength - position, 0.0, 1.0, 0,
+      opacity = scaleBetween(cardListLength - position, 0.0, opacity, 0,
           cardListLength - positionFirstCard);
     }
 
-    var firstCardVisible = csState == CardSelectorState.targetBack;
-    var draggableWidget = Draggable(
-      data: "card",
-      axis: Axis.horizontal,
-      feedback: Container(
-        width: cardWidth,
-        height: cardHeight,
-        child: w,
-      ),
-      childWhenDragging: AnimatedOpacity(
-        opacity: firstCardVisible ? 1 : 0,
-        duration: Duration(
-            milliseconds:
-                firstCardVisible ? widget.cardAnimationDurationMs : 0),
-        child: Container(
-          width: cardWidth,
-          height: cardHeight,
-          child: w,
-        ),
-      ),
-      onDragStarted: () {
-        setState(() => dropWidth = widget.dropTargetWidth);
-      },
-      onDragEnd: (details) {
-        setState(() => dropWidth = 0.0);
-      },
-      child: Container(
-        width: cardWidth,
-        height: cardHeight,
-        child: w,
-      ),
-    );
+    var duration = (widget.cardAnimationDurationMs * position / 2).round();
 
-    var duration =
-        showLastCard && position == 0 ? 0 : widget.cardAnimationDurationMs;
+    if (position == 0 && csState == CardSelectorState.target) {
+      //place the card off the screen to improve the animation
+      leftPadding = -widget.mainCardWidth;
+    }
     return AnimatedPositioned(
       key: w.key,
-      duration: Duration(
-          milliseconds: (duration * position * animDelayFactor).round()),
+      duration: Duration(milliseconds: duration),
       curve: Curves.easeOut,
       top: (widget.mainCardHeight - cardHeight) / 2,
       left: leftPadding,
       child: AnimatedOpacity(
         opacity: opacity,
         curve: Curves.easeOut,
-        duration: Duration(milliseconds: duration * position),
-        child: position == 0
-            ? draggableWidget
-            : AnimatedContainer(
-                duration: Duration(milliseconds: duration * position),
-                curve: Curves.easeOut,
-                width: cardWidth,
-                height: cardHeight,
-                child: w,
-              ),
+        duration: Duration(milliseconds: duration),
+        child: position == 0 ? Draggable(
+          data: "card",
+          axis: Axis.horizontal,
+          feedback: Container(
+            width: cardWidth,
+            height: cardHeight,
+            child: w,
+          ),
+          childWhenDragging: AnimatedOpacity(
+            opacity: showLastCard ? 1 : 0,
+            duration: Duration(
+                milliseconds:
+                showLastCard ? widget.cardAnimationDurationMs : 0),
+            child: Container(
+              width: cardWidth,
+              height: cardHeight,
+              child: w,
+            ),
+          ),
+          child: Container(
+            width: cardWidth,
+            height: cardHeight,
+            child: w,
+          ),
+        ) : AnimatedContainer(
+          duration: Duration(milliseconds: duration),
+          curve: Curves.easeOut,
+          width: cardWidth,
+          height: cardHeight,
+          child: w,
+        ),
       ),
     );
   }
