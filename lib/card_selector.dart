@@ -7,6 +7,7 @@ const defaultAnimationDuration = 150;
 enum Position { left, right }
 enum CardSelectorState { idle, target, switching, targetBack, switchingBack }
 
+/// A widget to select stacked widgets sliding left or right
 class CardSelector extends StatefulWidget {
   final List<Widget> cards;
   final ValueChanged<int> onChanged;
@@ -18,6 +19,25 @@ class CardSelector extends StatefulWidget {
   final double dropTargetWidth;
   final double lastCardSizeFactor;
 
+
+  /// Creates a card selector widget.
+  ///
+  /// The [onChanged] is the callback to execute on card changed.
+  ///
+  /// The [mainCardWidth] is the width for the first element in the list.
+  ///
+  /// The [mainCardHeight] is the height for the first element in the list.
+  ///
+  /// The [mainCardPadding] left padding of the first element in the list.
+  ///
+  /// The [cardsGap] is the gap size between cards.
+  ///
+  /// The [cardAnimationDurationMs] is animation time in ms.
+  ///
+  /// The [dropTargetWidth] is the size of the drop targets.
+  ///
+  /// The [lastCardSizeFactor] is the factore of the last element to render
+  /// compare to the first element.
   CardSelector({
     @required this.cards,
     this.onChanged,
