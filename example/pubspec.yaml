@@ -1,0 +1,39 @@
+name: fancy_wallet
+description: A demo app to illustrate a wallet.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  material_design_icons_flutter: 3.2.3595
+  card_selector:
+    path: ../
+
+  cupertino_icons: ^0.1.2
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - in.json
+    - visa.png
+    - mastercard.png
+    - dots.png
+    - layers.png
+    - circles.png
+
+  fonts:
+    - family: rms
+      fonts:
+        - asset: fonts/RemachineScript.ttf
+
