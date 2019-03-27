@@ -7,7 +7,7 @@ Widget selector for Flutter using stack. An example is available on this [repo](
 ### Installation
 ```
 dependencies:
-  flutter_card_selector: "^0.0.1"
+  card_selector: ^0.1.0
 ```
 
 ### Import the library
