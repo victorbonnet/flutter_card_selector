@@ -1,6 +1,6 @@
 name: card_selector
-description: Widget selector for Flutter using stack.
-version: 0.0.1
+description: Widget selector for Flutter using stack. The selector is fully configurable, animation time, gap between cards, size factor for stacxked cards, ...
+version: 0.1.0
 author: Victor Bonnet<victor.bonnet@gmail.com>
 homepage: https://github.com/victorbonnet/flutter_card_selector
 
