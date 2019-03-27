@@ -1,4 +1,4 @@
-name: CardSelector
+name: card_selector
 description: Widget selector for Flutter using stack.
 version: 0.0.1
 author: Victor Bonnet<victor.bonnet@gmail.com>
