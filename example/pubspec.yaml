@@ -1,6 +1,8 @@
-name: fancy_wallet
+name: card_selector_example
 description: A demo app to illustrate a wallet.
 version: 1.0.0+1
+author: Victor Bonnet<victor.bonnet@gmail.com>
+homepage: https://github.com/victorbonnet/flutter_card_selector
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -8,10 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  material_design_icons_flutter: 3.2.3595
-  card_selector:
-    path: ../
-
+  card_selector: ^0.0.1
   cupertino_icons: ^0.1.2
 
 

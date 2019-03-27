@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:card_selector/card_selector.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 void main() => runApp(MyApp());
 
@@ -105,8 +104,7 @@ class Amounts extends StatelessWidget {
           padding: pd,
           child: Row(
             children: <Widget>[
-              Icon(MdiIcons.fromString(tx['i']),
-                  size: 24.0, color: Colors.blueGrey),
+              Icon(Icons.shopping_cart, size: 24.0, color: Colors.blueGrey),
               SizedBox(width: 16.0),
               Expanded(
                 child: Column(
