@@ -5,7 +5,7 @@ author: Victor Bonnet<victor.bonnet@gmail.com>
 homepage: https://github.com/victorbonnet/flutter_card_selector
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:

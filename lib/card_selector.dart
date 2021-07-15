@@ -38,8 +38,8 @@ class CardSelector extends StatefulWidget {
   /// The [lastCardSizeFactor] is the factore of the last element to render
   /// compare to the first element.
   CardSelector({
-    @required this.cards,
-    this.onChanged,
+    required this.cards,
+    required this.onChanged,
     this.mainCardWidth = 240,
     this.mainCardHeight = 150,
     this.mainCardPadding = 0,
@@ -133,20 +133,20 @@ class _CardSelectorState extends State<CardSelector> {
       height: widget.mainCardHeight,
       width: dropWidth,
       child: DragTarget(
-        builder: (context, List<String> candidateData, rejectedData) {
+        builder: (context, List<String?> candidateData, rejectedData) {
           return Container(
             height: widget.mainCardHeight,
             width: widget.dropTargetWidth,
           );
         },
-        onWillAccept: (data) {
+        onWillAccept: (dynamic data) {
           updateState(CardSelectorState.target);
           return true;
         },
-        onAccept: (data) {
+        onAccept: (dynamic data) {
           updateState(CardSelectorState.switching);
         },
-        onLeave: (data) {
+        onLeave: (dynamic data) {
           updateState(CardSelectorState.idle);
         },
       ),
@@ -161,23 +161,23 @@ class _CardSelectorState extends State<CardSelector> {
           height: widget.mainCardHeight,
           width: dropWidth,
           child: DragTarget(
-            builder: (context, List<String> candidateData, rejectedData) {
+            builder: (context, List<String?> candidateData, rejectedData) {
               return Container(
                 height: widget.mainCardHeight,
                 width: widget.dropTargetWidth,
               );
             },
-            onWillAccept: (data) {
+            onWillAccept: (dynamic data) {
               showLastCard = true;
               updateState(CardSelectorState.targetBack);
               return true;
             },
-            onAccept: (data) {
+            onAccept: (dynamic data) {
               disableCardPreviewAnim = true;
               showLastCard = false;
               updateState(CardSelectorState.switchingBack);
             },
-            onLeave: (data) {
+            onLeave: (dynamic data) {
               showLastCard = false;
               updateState(CardSelectorState.idle);
             },
@@ -216,7 +216,7 @@ class _CardSelectorState extends State<CardSelector> {
                   cardListLength - positionFirstCard);
     }
 
-    var opacity = 1.0;
+    double? opacity = 1.0;
     if (position > positionFirstCard) {
       opacity = scaleBetween(cardListLength - position, 0.0, opacity, 0,
           cardListLength - positionFirstCard);
@@ -248,7 +248,7 @@ class _CardSelectorState extends State<CardSelector> {
       top: (widget.mainCardHeight - cardHeight) / 2,
       left: leftPadding,
       child: AnimatedOpacity(
-        opacity: opacity,
+        opacity: opacity!,
         curve: Curves.easeOut,
         duration: Duration(milliseconds: duration),
         child: draggable
@@ -299,9 +299,7 @@ class _CardSelectorState extends State<CardSelector> {
     Future.delayed(duration, () {
       disableDraggable = false;
 
-      if (widget.onChanged != null) {
-        widget.onChanged(initialCardListIndex % widget.cards.length);
-      }
+      widget.onChanged(initialCardListIndex % widget.cards.length);
 
       updateState(CardSelectorState.idle);
     });
@@ -317,9 +315,7 @@ class _CardSelectorState extends State<CardSelector> {
       var first = _cards.removeAt(0);
       _cards.add(first);
 
-      if (widget.onChanged != null) {
-        widget.onChanged(initialCardListIndex % widget.cards.length);
-      }
+      widget.onChanged(initialCardListIndex % widget.cards.length);
 
       updateState(CardSelectorState.idle);
     });
